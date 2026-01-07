@@ -1,6 +1,6 @@
 {
-  "name": "npm-package-example",
-  "version": "0.0.0-development",
+  "name": "@sukumarp2022/npm-package-example",
+  "version": "1.0.0",
   "description": "This is a simple npm package example",
   "main": "dist/index.js",
   "scripts": {
@@ -20,7 +20,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/creativedeveloper-net/npm-package-example.git"
+    "url": "https://github.com/sukumarp2022/npm-package-example.git"
   },
   "keywords": [
     "npm",
@@ -33,9 +33,9 @@
   "author": "'Tomasz",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/creativedeveloper-net/npm-package-example/issues"
+    "url": "https://github.com/sukumarp2022/npm-package-example/issues"
   },
-  "homepage": "https://github.com/creativedeveloper-net/npm-package-example#readme",
+  "homepage": "https://github.com/sukumarp2022/npm-package-example#readme",
   "devDependencies": {
     "babel-cli": "6.18.0",
     "babel-loader": "6.2.10",
@@ -69,5 +69,8 @@
       "es2015",
       "stage-2"
     ]
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
   }
 }
