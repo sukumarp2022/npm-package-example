@@ -48,24 +48,6 @@ jobs:
           echo "Replacement complete. Showing changes:"
           git diff
 
-      - name: Configure Git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Commit changes locally
-        run: |
-          git add -A
-          git commit -m "Replace ${{ inputs.old_value }} with ${{ inputs.new_value }} in package.json files" || echo "No changes to commit"
-
-      - name: Create local tag
-        run: |
-          # Delete local tag if it exists
-          git tag -d ${{ inputs.tag }} 2>/dev/null || true
-          # Create new tag pointing to the modified commit
-          git tag ${{ inputs.tag }}
-          echo "Created local tag: ${{ inputs.tag }}"
-
       - name: Delete existing package version from GitHub registry
         continue-on-error: true
         env:
