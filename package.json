@@ -20,7 +20,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/sukumarp2022/npm-package-example.git"
+    "url": "git+https://github.com/sukumarp2022/npm-package-example.git"
   },
   "keywords": [
     "npm",
@@ -72,5 +72,8 @@
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
+  },
+  "dependencies": {
+    "simple-npm-package2": "github:sukumarp2022/simple-npm-package2"
   }
 }
