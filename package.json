@@ -1,6 +1,6 @@
 {
   "name": "@sukumarp2022/npm-package-example",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "This is a simple npm package example",
   "main": "dist/index.js",
   "scripts": {
