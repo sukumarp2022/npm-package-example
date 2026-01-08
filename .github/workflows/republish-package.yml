@@ -7,15 +7,15 @@ on:
         description: 'Tag version to checkout and republish'
         required: true
         type: string
-      old_org:
-        description: 'Old organization name to replace'
+      old_value:
+        description: 'Old value name to replace'
         required: true
-        default: 'oldorg'
+        default: 'old_value'
         type: string
-      new_org:
-        description: 'New organization name'
+      new_value:
+        description: 'New value name to replace'
         required: true
-        default: 'neworg'
+        default: 'new_value'
         type: string
 
 jobs:
@@ -37,14 +37,13 @@ jobs:
         with:
           node-version: '20'
           registry-url: 'https://npm.pkg.github.com'
-          scope: '@${{ inputs.new_org }}'
 
-      - name: Replace old org with new org in root package.json
+      - name: Replace old value with new value in root package.json
         run: |
-          echo "Replacing '${{ inputs.old_org }}' with '${{ inputs.new_org }}' in root package.json..."
+          echo "Replacing '${{ inputs.old_value }}' with '${{ inputs.new_value }}' in root package.json..."
           
-          # Replace the org name in the root package.json only
-          sed -i "s/${{ inputs.old_org }}/${{ inputs.new_org }}/g" "./package.json"
+          # Replace the value in the root package.json only
+          sed -i "s/${{ inputs.old_value }}/${{ inputs.new_value }}/g" "./package.json"
           
           echo "Replacement complete. Showing changes:"
           git diff
@@ -57,7 +56,7 @@ jobs:
       - name: Commit changes locally
         run: |
           git add -A
-          git commit -m "Replace ${{ inputs.old_org }} with ${{ inputs.new_org }} in package.json files" || echo "No changes to commit"
+          git commit -m "Replace ${{ inputs.old_value }} with ${{ inputs.new_value }} in package.json files" || echo "No changes to commit"
 
       - name: Create local tag
         run: |
@@ -192,8 +191,8 @@ jobs:
           echo "## Workflow Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "- **Tag processed:** ${{ inputs.tag }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Old org replaced:** ${{ inputs.old_org }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **New org:** ${{ inputs.new_org }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Old value replaced:** ${{ inputs.old_value }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **New value:** ${{ inputs.new_value }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Repository changes:** NOT pushed (local commit only)" >> $GITHUB_STEP_SUMMARY
           echo "- **Package:** Republished to GitHub Packages Registry" >> $GITHUB_STEP_SUMMARY
           echo "- **Original latest version:** ${{ steps.get-latest.outputs.current_latest || 'N/A (new package)' }}" >> $GITHUB_STEP_SUMMARY
