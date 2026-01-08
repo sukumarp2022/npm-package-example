@@ -130,6 +130,25 @@ jobs:
             fi
           fi
 
+      - name: Get current latest version
+        id: get-latest
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          FULL_PACKAGE_NAME=$(jq -r '.name' package.json)
+          echo "Checking current 'latest' tag for $FULL_PACKAGE_NAME..."
+          
+          # Get the version currently tagged as 'latest'
+          CURRENT_LATEST=$(npm view "$FULL_PACKAGE_NAME" dist-tags.latest --registry=https://npm.pkg.github.com 2>/dev/null || echo "")
+          
+          if [ -n "$CURRENT_LATEST" ]; then
+            echo "Current 'latest' version: $CURRENT_LATEST"
+            echo "current_latest=$CURRENT_LATEST" >> $GITHUB_OUTPUT
+          else
+            echo "No existing 'latest' version found (package may not exist yet)"
+            echo "current_latest=" >> $GITHUB_OUTPUT
+          fi
+
       - name: Install dependencies
         run: npm install
 
@@ -149,6 +168,25 @@ jobs:
           npm publish --registry=https://npm.pkg.github.com
           echo "Package published successfully!"
 
+      - name: Restore original latest tag
+        if: steps.get-latest.outputs.current_latest != ''
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          FULL_PACKAGE_NAME=$(jq -r '.name' package.json)
+          ORIGINAL_LATEST="${{ steps.get-latest.outputs.current_latest }}"
+          
+          echo "Restoring 'latest' tag to version $ORIGINAL_LATEST..."
+          
+          # Reassign the 'latest' dist-tag to the original version
+          npm dist-tag add "${FULL_PACKAGE_NAME}@${ORIGINAL_LATEST}" latest --registry=https://npm.pkg.github.com
+          
+          echo "Successfully restored 'latest' tag to $ORIGINAL_LATEST"
+          
+          # Verify the change
+          echo "Verifying dist-tags:"
+          npm view "$FULL_PACKAGE_NAME" dist-tags --registry=https://npm.pkg.github.com || true
+
       - name: Summary
         run: |
           echo "## Workflow Summary" >> $GITHUB_STEP_SUMMARY
@@ -158,3 +196,5 @@ jobs:
           echo "- **New org:** ${{ inputs.new_org }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Repository changes:** NOT pushed (local commit only)" >> $GITHUB_STEP_SUMMARY
           echo "- **Package:** Republished to GitHub Packages Registry" >> $GITHUB_STEP_SUMMARY
+          echo "- **Original latest version:** ${{ steps.get-latest.outputs.current_latest || 'N/A (new package)' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Latest tag restored:** ${{ steps.get-latest.outputs.current_latest != '' && 'Yes' || 'No (was first publish)' }}" >> $GITHUB_STEP_SUMMARY
